@@ -1,0 +1,89 @@
+\section*{Our Model}
+
+Here we present a first draft of our model for a privacy-preserving
+event-ambivalent notification scheme~\footnote{Design and presentation of this
+model inspired by Section 3.1 of~\cite{CK:eurocrypt20}.}.\par
+
+Our model requires that the event server is not able to record the sender of
+incoming messages. This can be achieved in practice either by assumption or
+requiring the client to do some sort of packet spoofing or use a communication
+protocol like Tor to blind the source.
+
+Informally, an event-ambivalent notification scheme is a protocol between a
+client, an event server, and an alert server. The protocol consists of the
+following steps:\par
+
+\begin{enumerate}
+  \item The client uses the \texttt{Setup} algorithm to generate a secret key
+    \texttt{sk}.
+  \item Upon an event, the client uses \texttt{Identify} to generate an
+    \texttt{id} given \texttt{sk} and the event. The client sends \texttt{id}
+    and the event to the event server.
+  \item When the event server wants to send out an alert based on a specific
+    event, it runs \texttt{Process} on the event \texttt{id} and sends the 
+    resulting \texttt{alert} to the alert server.
+  \item Upon receiving an \texttt{alert} the alert server runs \texttt{Label} to
+    gain an address \texttt{addr} that it then places the alert in the mailbox
+    labeled \texttt{addr}.
+  \item The client runs \texttt{Address} using \texttt{sk} to check receive a
+    set of mailboxes \texttt{addrs} that they can periodically check for
+    messages.
+\end{enumerate}
+
+Provided the two servers do not collude, a privacy-preserving event-ambivalent
+notification scheme should ensure that:\par
+\begin{enumerate}
+  \item The event server shouldn't be able to link different events stored by the
+    same client together.
+  \item The alert server shouldn't learn anything from an identifier regarding the
+    event it is tied to or what client generated it.
+  \item The client shouldn't be able to link a message in a mailbox back to a
+    specific event.
+  \item The servers and any other clients shouldn't be able to link any mailboxes
+    to a specific user.
+  \item Only a client who submitted an event can then check the resulting mailbox.
+\end{enumerate}
+
+A rough draft of the formal definition of such a scheme:\par
+
+\begin{define}
+\label{define:model}
+  
+  \emph{A privacy-preserving event-ambivalent notification scheme is a tuple}\\
+  $\Pi = \mathtt{(Setup, Identify, Process, Label, Address)}$ \emph{of efficient
+  algorithms:}
+  
+  \begin{itemize}
+    
+    \item $\mathtt{Setup}(1^\lambda) \to \mathtt{sk}$:
+
+    \item $\mathtt{Identify}(\mathtt{sk, event}) \to \mathtt{id}$:
+
+    \item $\mathtt{Process}(\mathtt{id}) \to \mathtt{alert}$:
+    
+    \item $\mathtt{Label}(\mathtt{alert}) \to \mathtt{addr}$:
+
+    \item $\mathtt{Address}(\mathtt{sk}) \to \mathtt{addrs}$:
+  
+  \end{itemize}
+
+\end{define}
+
+Furthermore, $\Pi$ must satisfy the following properties:
+
+\textbf{Correctness.}
+
+\[
+  \textrm{Pr}\left[ 
+    \mathtt{Label}(\mathtt{alert}) \in \mathtt{addr} : 
+    \begin{tabular}{r}
+      $\mathtt{sk} \gets \mathtt{Setup}\left(1^\lambda\right)$\\
+      $\mathtt{id} \gets \mathtt{Identify}\left(\mathtt{sk, event}\right)$\\
+      $\mathtt{alert} \gets \mathtt{Process}\left(\mathtt{id}\right)$\\
+      $\mathtt{addr} \gets \mathtt{Address}\left(\mathtt{sk}\right)$\\
+    \end{tabular} 
+  \right] = 1
+\]
+
+\textbf{Security.}
+
