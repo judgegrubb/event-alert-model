@@ -1,4 +1,4 @@
-\section*{Our Model}
+\section{Our Model}
 
 Here we present a first draft of our model for a privacy-preserving
 event-ambivalent notification scheme~\footnote{Design and presentation of this
@@ -17,14 +17,15 @@ following steps:\par
   \item The client uses the \texttt{Setup} algorithm to generate a secret key
     \texttt{sk}.
   \item Upon an event, the client uses \texttt{Identify} to generate an
-    \texttt{id} given \texttt{sk} and the event. The client sends \texttt{id}
-    and the event to the event server.
+    \texttt{tag} and a \texttt{hint} given \texttt{sk} and the event. The client
+    sends the \texttt{tag} and the event to the event server and sends the
+    \texttt{hint} to the alert server.
   \item When the event server wants to send out an alert based on a specific
-    event, it runs \texttt{Process} on the event \texttt{id} and sends the 
-    resulting \texttt{alert} to the alert server.
-  \item Upon receiving an \texttt{alert} the alert server runs \texttt{Label} to
-    gain an address \texttt{addr} that it then places the alert in the mailbox
-    labeled \texttt{addr}.
+    event, it runs \texttt{Process} on the event \texttt{tag} and sends the 
+    resulting \texttt{badge} to the alert server.
+  \item Upon receiving an \texttt{badge} and the \texttt{hint} it stored, the
+    alert server runs \texttt{Label} to gain an address \texttt{addr} that it
+    then places the alert in the mailbox labeled \texttt{addr}.
   \item The client runs \texttt{Address} using \texttt{sk} to check receive a
     set of mailboxes \texttt{addrs} that they can periodically check for
     messages.
@@ -57,11 +58,11 @@ A rough draft of the formal definition of such a scheme:\par
     
     \item $\mathtt{Setup}(1^\lambda) \to \mathtt{sk}$:
 
-    \item $\mathtt{Identify}(\mathtt{sk, event}) \to \mathtt{id}$:
+    \item $\mathtt{Identify}(\mathtt{sk, event}) \to (\mathtt{tag, hint}$:
 
-    \item $\mathtt{Process}(\mathtt{id}) \to \mathtt{alert}$:
+    \item $\mathtt{Process}(\mathtt{tag}) \to \mathtt{badge}$:
     
-    \item $\mathtt{Label}(\mathtt{alert}) \to \mathtt{addr}$:
+    \item $\mathtt{Label}(\mathtt{badge, hint}) \to \mathtt{addr}$:
 
     \item $\mathtt{Address}(\mathtt{sk}) \to \mathtt{addrs}$:
   
@@ -75,10 +76,10 @@ Furthermore, $\Pi$ must satisfy the following properties:
 
 \[
   \textrm{Pr}\left[ 
-    \mathtt{Label}(\mathtt{alert}) \in \mathtt{addr} : 
+    \mathtt{Label}(\mathtt{alert, hint}) \in \mathtt{addr} : 
     \begin{tabular}{r}
       $\mathtt{sk} \gets \mathtt{Setup}\left(1^\lambda\right)$\\
-      $\mathtt{id} \gets \mathtt{Identify}\left(\mathtt{sk, event}\right)$\\
+      $(\mathtt{id, hint}) \gets \mathtt{Identify}\left(\mathtt{sk, event}\right)$\\
       $\mathtt{alert} \gets \mathtt{Process}\left(\mathtt{id}\right)$\\
       $\mathtt{addr} \gets \mathtt{Address}\left(\mathtt{sk}\right)$\\
     \end{tabular} 
@@ -86,4 +87,6 @@ Furthermore, $\Pi$ must satisfy the following properties:
 \]
 
 \textbf{Security.}
+
+
 
