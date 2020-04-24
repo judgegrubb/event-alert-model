@@ -16,16 +16,17 @@ following steps:\par
 \begin{enumerate}
   \item The client uses the \texttt{Setup} algorithm to generate a secret key
     \texttt{sk}.
-  \item Upon an event, the client uses \texttt{Identify} to generate an
-    \texttt{tag} and a \texttt{hint} given \texttt{sk} and the event. The client
-    sends the \texttt{tag} and the event to the event server and sends the
-    \texttt{hint} to the alert server.
+  \item Upon an event, the client uses \texttt{Identify} to generate a
+    tag \texttt{t} and a hint \texttt{h} given \texttt{sk} and the event
+    \texttt{e}. The client sends \texttt{t} and the event to the event
+    server and sends \texttt{h} to the alert server.
   \item When the event server wants to send out an alert based on a specific
-    event, it runs \texttt{Process} on the event \texttt{tag} and sends the 
-    resulting \texttt{badge} to the alert server.
-  \item Upon receiving an \texttt{badge} and the \texttt{hint} it stored, the
-    alert server runs \texttt{Label} to gain an address \texttt{addr} that it
-    then places the alert in the mailbox labeled \texttt{addr}.
+    event, it runs \texttt{Process} on the event tag \texttt{t} and sends the 
+    resulting badge \texttt{b} to the alert server.
+  \item Upon receiving \texttt{b} and along with the previously stored
+    \texttt{h} the alert server runs \texttt{Label} to gain an address
+    \texttt{addr} that it then places the alert in the mailbox labeled
+    \texttt{addr}.
   \item The client runs \texttt{Address} using \texttt{sk} to check receive a
     set of mailboxes \texttt{addrs} that they can periodically check for
     messages.
@@ -36,7 +37,7 @@ notification scheme should ensure that:\par
 \begin{enumerate}
   \item The event server shouldn't be able to link different events stored by the
     same client together.
-  \item The alert server shouldn't learn anything from an identifier regarding the
+  \item The alert server shouldn't learn anything from an badge regarding the
     event it is tied to or what client generated it.
   \item The client shouldn't be able to link a message in a mailbox back to a
     specific event.
@@ -56,15 +57,25 @@ A rough draft of the formal definition of such a scheme:\par
   
   \begin{itemize}
     
-    \item $\mathtt{Setup}(1^\lambda) \to \mathtt{sk}$:
+    \item $\mathtt{Setup}(1^\lambda) \to \mathtt{sk}$: A randomized algorithm
+      that takes in the security parameter $\lambda$ and outputs a secret key
+      $\mathtt{sk}$.
 
-    \item $\mathtt{Identify}(\mathtt{sk, event}) \to (\mathtt{tag, hint}$:
+    \item $\mathtt{Identify}(\mathtt{sk, e}) \to (\mathtt{t, h}$: A
+      randomized algorithm that takes in a secret key $\mathtt{sk}$ and an
+      event $\mathtt{e}$ and outputs a tag $\mathtt{t}$ and a hint
+      $\mathtt{h}$.
 
-    \item $\mathtt{Process}(\mathtt{tag}) \to \mathtt{badge}$:
+    \item $\mathtt{Process}(\mathtt{t}) \to \mathtt{b}$: A deterministic
+      algorithm that given a tag $\mathtt{t}$ it outputs a badge $\mathtt{b}$.
     
-    \item $\mathtt{Label}(\mathtt{badge, hint}) \to \mathtt{addr}$:
+    \item $\mathtt{Label}(\mathtt{b, h}) \to \mathtt{addr}$: A deterministic
+      algorithm that takes in a badge $\mathtt{b}$ and a hint $\mathtt{h}$
+      and outputs an address $\mathtt{addr}$
 
-    \item $\mathtt{Address}(\mathtt{sk}) \to \mathtt{addrs}$:
+    \item $\mathtt{Address}(\mathtt{sk}) \to \mathtt{addrs}$: A deterministic
+      algorithm that takes in a secret key $\mathtt{sk}$ and outputs a set of
+      addresses $\mathtt{addrs}$.
   
   \end{itemize}
 
@@ -87,6 +98,7 @@ Furthermore, $\Pi$ must satisfy the following properties:
 \]
 
 \textbf{Security.}
+
 
 
 
